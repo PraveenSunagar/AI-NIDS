@@ -8,16 +8,16 @@ Production-grade, full-stack cybersecurity web platform for real-time Network In
 
 ```mermaid
 graph TD
-    Client[React + TypeScript + Tailwind CSS Frontend] <-->|REST API / WebSockets| Server[FastAPI Backend]
-    Server <-->|SQLAlchemy ORM| DB[(SQLite / PostgreSQL Database)]
-    Server <-->|Inference Engine| ML[Scikit-learn Joblib Models]
-    Server <-->|Traffic Adapter| Sim[Demo Traffic Generator / PCAP Adapter Stub]
+    Client["React + TypeScript + Tailwind CSS Frontend"] <-->|REST API / WebSockets| Server["FastAPI Backend"]
+    Server <-->|SQLAlchemy ORM| DB[("SQLite / PostgreSQL Database")]
+    Server <-->|Inference Engine| ML["Scikit-learn Joblib Models"]
+    Server <-->|Traffic Adapter| Sim["Demo Traffic Generator / PCAP Adapter Stub"]
     
-    SubGraph ML Pipeline
-        Raw[NSL-KDD Dataset] --> Pre[Cleaning & Encoding]
-        Pre --> FS[20-Feature Selector]
-        FS --> Train[Train DT & RF Classifiers]
-        Train --> Export[Joblib Artifacts .pkl]
+    subgraph ML_Pipeline ["ML Pipeline"]
+        Raw["NSL-KDD Dataset"] --> Pre["Cleaning & Encoding"]
+        Pre --> FS["20-Feature Selector"]
+        FS --> Train["Train DT & RF Classifiers"]
+        Train --> Export["Joblib Artifacts .pkl"]
     end
 ```
 
