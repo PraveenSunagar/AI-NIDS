@@ -22,7 +22,11 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       localStorage.setItem('nids_token', data.access_token);
       onLoginSuccess(data.user, data.access_token);
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Invalid email or password. Please try again.');
+      if (!err.response) {
+        setError('Backend server offline. Please start the FastAPI backend server (uvicorn backend.app.main:app --reload --port 8000).');
+      } else {
+        setError(err.response?.data?.detail || 'Invalid email or password. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI-NIDS Project Presentation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.8);
+      --card-border: #334155;
+      --cyan: #38bdf8;
+      --emerald: #10b981;
+      --red: #ef4444;
+      --amber: #f59e0b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    .slide-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .slide {
+      position: absolute;
+      width: 88vw;
+      height: 84vh;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 40px 50px;
+      display: none;
+      flex-direction: column;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .category-tag {
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--cyan);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .slide-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 24px;
+      border-bottom: 2px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 12px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      flex: 1;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      flex: 1;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--cyan);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title.emerald { color: var(--emerald); }
+    .card-title.amber { color: var(--amber); }
+    .card-title.red { color: var(--red); }
+
+    ul.bullet-list {
+      list-style: none;
+    }
+
+    ul.bullet-list li {
+      position: relative;
+      padding-left: 20px;
+      margin-bottom: 14px;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    ul.bullet-list li::before {
+      content: '▹';
+      position: absolute;
+      left: 0;
+      color: var(--cyan);
+      font-weight: bold;
+    }
+
+    ul.bullet-list.emerald li::before { color: var(--emerald); }
+    ul.bullet-list.red li::before { color: var(--red); }
+
+    .highlight-bold {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* Controls Bar */
+    .controls {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(30, 41, 59, 0.9);
+      border: 1px solid var(--card-border);
+      padding: 10px 24px;
+      border-radius: 30px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      z-index: 100;
+    }
+
+    .btn {
+      background: var(--cyan);
+      color: var(--bg-dark);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: #7dd3fc;
+      transform: translateY(-1px);
+    }
+
+    .slide-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    table.metrics-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    table.metrics-table th, table.metrics-table td {
+      border: 1px solid var(--card-border);
+      padding: 12px;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    table.metrics-table th {
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--cyan);
+      font-weight: 700;
+    }
+
+    table.metrics-table td {
+      background: rgba(15, 23, 42, 0.5);
+      color: var(--text-main);
+    }
+
+    .badge-best {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--emerald);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      border: 1px solid var(--emerald);
+    }
+
+    .title-slide-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .main-hero-title {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 0%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 16px;
+    }
+
+    .hero-subtitle {
+      font-size: 1.3rem;
+      color: var(--cyan);
+      margin-bottom: 30px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="slide-container">
+
+  <!-- SLIDE 1 -->
+  <div class="slide active" id="slide-1">
+    <div class="title-slide-content">
+      <div class="category-tag">Enterprise Cybersecurity Platform</div>
+      <h1 class="main-hero-title">AI-Based Network Intrusion Detection System</h1>
+      <div class="hero-subtitle">Production-Grade AI-NIDS Powered by Machine Learning & Real-Time Stream Analytics</div>
+      
+      <div class="card" style="border-color: var(--cyan); margin-top: 20px;">
+        <div class="card-title">PROJECT ARCHITECTURE & TECHNOLOGY STACK</div>
+        <ul class="bullet-list emerald">
+          <li><span class="highlight-bold">Core Engine:</span> Supervised Machine Learning trained on official NSL-KDD benchmark dataset.</li>
+          <li><span class="highlight-bold">Full Stack Architecture:</span> React 18 TypeScript Frontend + FastAPI ASGI Backend + WebSockets.</li>
+          <li><span class="highlight-bold">Security Features:</span> Role-Based Access Control (RBAC), JWT Authentication, Automated Alert Triage.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2 -->
+  <div class="slide" id="slide-2">
+    <div class="category-tag">Executive Overview</div>
+    <h2 class="slide-title">Problem Statement & Strategic AI Solution</h2>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title red">Traditional NIDS Limitations</div>
+        <ul class="bullet-list red">
+          <li><span class="highlight-bold">Static Rule Signatures:</span> Fails against mutated zero-day network threats.</li>
+          <li><span class="highlight-bold">High Alarm Fatigue:</span> SOC analysts flooded with false positives daily.</li>
+          <li><span class="highlight-bold">Bandwidth Bottlenecks:</span> Manual log review cannot scale with modern gigabit networks.</li>
+          <li><span class="highlight-bold">Response Lag:</span> Static batch analysis delays threat containment by hours.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title emerald">AI-NIDS Intelligent Solution</div>
+        <ul class="bullet-list emerald">
+          <li><span class="highlight-bold">ML Pattern Learning:</span> Random Forest & Decision Tree models with 78% accuracy.</li>
+          <li><span class="highlight-bold">96.68% Attack Precision:</span> High fidelity classification eliminates SOC false alarms.</li>
+          <li><span class="highlight-bold">Sub-Second WebSocket Stream:</span> Continuous real-time traffic monitoring & verdict push.</li>
+          <li><span class="highlight-bold">Automated Alert Lifecycle:</span> CRITICAL, HIGH, and MEDIUM severity auto-scoring.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3 -->
+  <div class="slide" id="slide-3">
+    <div class="category-tag">System Architecture</div>
+    <h2 class="slide-title">End-to-End Multi-Tier System Architecture</h2>
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-title">1. React SOC Frontend</div>
+        <ul class="bullet-list">
+          <li><span class="highlight-bold">React 18 + TypeScript:</span> Fast, type-safe user interface.</li>
+          <li><span class="highlight-bold">Recharts Visualizer:</span> Live stream charts & confusion matrix.</li>
+          <li><span class="highlight-bold">WebSockets:</span> Low-latency native client streaming.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title emerald">2. FastAPI Backend</div>
+        <ul class="bullet-list emerald">
+          <li><span class="highlight-bold">FastAPI + Uvicorn:</span> High-concurrency Python ASGI server.</li>
+          <li><span class="highlight-bold">ML Inference Engine:</span> Joblib pipeline execution.</li>
+          <li><span class="highlight-bold">Traffic Adapters:</span> Demo stream & Scapy PCAP stub.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title amber">3. Database & Models</div>
+        <ul class="bullet-list">
+          <li><span class="highlight-bold">SQLAlchemy ORM:</span> SQLite (dev) / PostgreSQL (prod).</li>
+          <li><span class="highlight-bold">Model Artifacts:</span> Serialized `.pkl` trained binary files.</li>
+          <li><span class="highlight-bold">Audit Logging:</span> System event tracking & RBAC compliance.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4 -->
+  <div class="slide" id="slide-4">
+    <div class="category-tag">Data Pipeline</div>
+    <h2 class="slide-title">NSL-KDD Benchmark Dataset & 20-Feature Selector</h2>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">NSL-KDD Dataset Characteristics</div>
+        <ul class="bullet-list">
+          <li><span class="highlight-bold">Solved Duplication:</span> Fixes KDD'99 duplicate records to prevent classifier bias.</li>
+          <li><span class="highlight-bold">Dataset Volumes:</span> 125,973 training records; 22,544 test set records.</li>
+          <li><span class="highlight-bold">Attack Categories:</span> DoS, Probe, R2L (Remote to Local), and U2R (User to Root).</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title emerald">Top Selected Features (Out of 41 Raw)</div>
+        <ul class="bullet-list emerald">
+          <li><span class="highlight-bold">Bytes & Protocols:</span> src_bytes, dst_bytes, protocol_type (TCP/UDP/ICMP).</li>
+          <li><span class="highlight-bold">Connection Statistics:</span> count, srv_count, logged_in status.</li>
+          <li><span class="highlight-bold">Error & Service Rates:</span> serror_rate, srv_serror_rate, same_srv_rate.</li>
+          <li><span class="highlight-bold">Host Statistics:</span> dst_host_srv_count, dst_host_same_srv_rate.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5 -->
+  <div class="slide" id="slide-5">
+    <div class="category-tag">Machine Learning</div>
+    <h2 class="slide-title">Model Architecture & Supervised Classifiers</h2>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title emerald">Random Forest Classifier (Primary Model)</div>
+        <ul class="bullet-list emerald">
+          <li><span class="highlight-bold">Ensemble Architecture:</span> Bagging trees over random feature subsets.</li>
+          <li><span class="highlight-bold">Overfitting Resistance:</span> Superior generalization on unseen test traffic.</li>
+          <li><span class="highlight-bold">Feature Importances:</span> Gini impurity scoring highlights top connection vectors.</li>
+          <li><span class="highlight-bold">Verdict:</span> Selected as primary production model.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Decision Tree Classifier (Baseline Model)</div>
+        <ul class="bullet-list">
+          <li><span class="highlight-bold">Recursive Splitting:</span> Binary decisions based on entropy & information gain.</li>
+          <li><span class="highlight-bold">Ultra-Fast Execution:</span> Sub-millisecond single-vector inference speed.</li>
+          <li><span class="highlight-bold">Rule Interpretability:</span> Decision branches can be audited by analysts.</li>
+          <li><span class="highlight-bold">Verdict:</span> Evaluated as fast comparison baseline.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6 -->
+  <div class="slide" id="slide-6">
+    <div class="category-tag">Performance Analytics</div>
+    <h2 class="slide-title">Empirical Model Evaluation (NSL-KDD Test Set)</h2>
+    
+    <table class="metrics-table">
+      <thead>
+        <tr>
+          <th>Model Classifier</th>
+          <th>Accuracy</th>
+          <th>Precision</th>
+          <th>Recall</th>
+          <th>F1-Score</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Random Forest</strong></td>
+          <td><strong>78.00%</strong></td>
+          <td><strong>96.68%</strong></td>
+          <td><strong>63.53%</strong></td>
+          <td><strong>76.68%</strong></td>
+          <td><span class="badge-best">SELECTED BEST</span></td>
+        </tr>
+        <tr>
+          <td>Decision Tree</td>
+          <td>75.96%</td>
+          <td>96.13%</td>
+          <td>60.19%</td>
+          <td>74.03%</td>
+          <td>Evaluated</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card" style="margin-top: 10px;">
+      <div class="card-title">Key Performance Insights</div>
+      <ul class="bullet-list emerald">
+        <li><span class="highlight-bold">96.68% Precision:</span> When AI-NIDS triggers an alert, it is nearly 97% guaranteed to be a genuine intrusion attack.</li>
+        <li><span class="highlight-bold">Test Set Generalization:</span> Tested on 22,544 samples containing unknown attack sub-types.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SLIDE 7 -->
+  <div class="slide" id="slide-7">
+    <div class="category-tag">Real-Time Engine</div>
+    <h2 class="slide-title">WebSocket Traffic Stream & Severity Auto-Scoring</h2>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">WebSocket Endpoint (`/ws`)</div>
+        <ul class="bullet-list">
+          <li><span class="highlight-bold">Full-Duplex Push:</span> Emits live JSON telemetry frames every 2.0 seconds.</li>
+          <li><span class="highlight-bold">Async Manager:</span> Handles concurrent SOC analyst dashboard connections.</li>
+          <li><span class="highlight-bold">Automatic DB Recording:</span> Stores packet history with confidence metrics.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title amber">Severity Scoring Engine</div>
+        <ul class="bullet-list amber">
+          <li><span class="highlight-bold">CRITICAL (Red):</span> Verdict ATTACK with Confidence ≥ 90%.</li>
+          <li><span class="highlight-bold">HIGH (Amber):</span> Verdict ATTACK with Confidence ≥ 80%.</li>
+          <li><span class="highlight-bold">MEDIUM / LOW:</span> Verdict ATTACK with Confidence < 80%.</li>
+          <li><span class="highlight-bold">NORMAL (Green):</span> Legitimate non-attack network flow.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8 -->
+  <div class="slide" id="slide-8">
+    <div class="category-tag">Analyst Tools</div>
+    <h2 class="slide-title">Interactive Detection Test Bench & Presets</h2>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Custom Vector Bench</div>
+        <ul class="bullet-list">
+          <li><span class="highlight-bold">Manual Parameter Form:</span> Enter exact 20 feature variables.</li>
+          <li><span class="highlight-bold">Instant API Endpoint:</span> Hits `/api/v1/detection/predict`.</li>
+          <li><span class="highlight-bold">Probability Outputs:</span> Returns exact percentage confidence score.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title red">One-Click Attack Presets</div>
+        <ul class="bullet-list red">
+          <li><span class="highlight-bold">⚡ DoS SYN Flood:</span> High connection count, serror_rate = 1.0.</li>
+          <li><span class="highlight-bold">🔍 Port Sweep Probe:</span> High diff_srv_rate across distinct host ports.</li>
+          <li><span class="highlight-bold">🌐 Normal HTTP Web:</span> Legitimate traffic profile with logged_in = 1.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9 -->
+  <div class="slide" id="slide-9">
+    <div class="category-tag">Security & Operations</div>
+    <h2 class="slide-title">SOC Alert Lifecycle & RBAC Governance</h2>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Alert Lifecycle Triage</div>
+        <ul class="bullet-list">
+          <li><span class="highlight-bold">Status Transitions:</span> OPEN ➔ ACKNOWLEDGED ➔ RESOLVED.</li>
+          <li><span class="highlight-bold">Analyst Notes:</span> Add investigation logs directly to alert tickets.</li>
+          <li><span class="highlight-bold">Multi-Criteria Filtering:</span> Search by severity, status, protocol.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title emerald">Role-Based Access Control (RBAC)</div>
+        <ul class="bullet-list emerald">
+          <li><span class="highlight-bold">ADMIN:</span> Full permissions, resolve alerts, system management.</li>
+          <li><span class="highlight-bold">ANALYST:</span> View traffic stream, run test bench, acknowledge alerts.</li>
+          <li><span class="highlight-bold">Audit Compliance:</span> Persisted log of all logins and ticket changes.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10 -->
+  <div class="slide" id="slide-10">
+    <div class="category-tag">DevOps & Quality</div>
+    <h2 class="slide-title">Container Stack & Quality Assurance</h2>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Docker Orchestration</div>
+        <ul class="bullet-list">
+          <li><span class="highlight-bold">Multi-Stage Dockerfile:</span> Optimized build for FastAPI backend.</li>
+          <li><span class="highlight-bold">Docker Compose:</span> Orchestrates Backend, Frontend, and PostgreSQL.</li>
+          <li><span class="highlight-bold">Config Isolation:</span> Managed cleanly via `.env` environment files.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title emerald">Automated Testing</div>
+        <ul class="bullet-list emerald">
+          <li><span class="highlight-bold">Pytest Suite:</span> Automated testing for APIs and DB schema.</li>
+          <li><span class="highlight-bold">Pydantic Validation:</span> Strict input schema enforcement.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11 -->
+  <div class="slide" id="slide-11">
+    <div class="category-tag">Future Vision</div>
+    <h2 class="slide-title">Technical Limitations & Product Roadmap</h2>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title amber">Technical Boundaries</div>
+        <ul class="bullet-list amber">
+          <li><span class="highlight-bold">Supervised Scope:</span> Supervised models target known attack patterns.</li>
+          <li><span class="highlight-bold">Benchmark Scope:</span> Production networks require continuous retraining.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title emerald">Future Roadmap Phases</div>
+        <ul class="bullet-list emerald">
+          <li><span class="highlight-bold">Phase 4:</span> Unsupervised Autoencoders for Zero-Day anomaly detection.</li>
+          <li><span class="highlight-bold">Phase 5:</span> LSTM Deep Learning models for temporal flow analysis.</li>
+          <li><span class="highlight-bold">Phase 6:</span> SIEM integration (Splunk / Elastic syslog forwarding).</li>
+          <li><span class="highlight-bold">Phase 7:</span> Automated firewall API hooks for IP blocking.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 12 -->
+  <div class="slide" id="slide-12">
+    <div class="title-slide-content">
+      <div class="category-tag" style="color: var(--emerald);">Project Summary & Conclusion</div>
+      <h1 class="main-hero-title">Thank You! Q&A Session</h1>
+      <div class="hero-subtitle">AI-NIDS: Enterprise-Grade Machine Learning Network Intrusion Detection</div>
+      
+      <div class="card" style="border-color: var(--emerald); margin-top: 20px;">
+        <div class="card-title emerald">KEY PROJECT MILESTONES ACHIEVED</div>
+        <ul class="bullet-list emerald">
+          <li>✔ <span class="highlight-bold">High Precision AI:</span> 96.68% Attack Precision dramatically cuts SOC false alarms.</li>
+          <li>✔ <span class="highlight-bold">Real-Time WebSocket Engine:</span> Continuous threat monitoring and alert scoring.</li>
+          <li>✔ <span class="highlight-bold">Production Full-Stack:</span> FastAPI + React 18 + Docker ready deployment.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation Bar -->
+<div class="controls">
+  <button class="btn" onclick="prevSlide()">❮ Prev</button>
+  <span class="slide-number" id="slide-num">Slide 1 of 12</span>
+  <button class="btn" onclick="nextSlide()">Next ❯</button>
+</div>
+
+<script>
+  let currentSlide = 1;
+  const totalSlides = 12;
+
+  function updateSlide() {
+    for (let i = 1; i <= totalSlides; i++) {
+      const slide = document.getElementById(`slide-${i}`);
+      if (i === currentSlide) {
+        slide.classList.add('active');
+      } else {
+        slide.classList.remove('active');
+      }
+    }
+    document.getElementById('slide-num').innerText = `Slide ${currentSlide} of ${totalSlides}`;
+  }
+
+  function nextSlide() {
+    if (currentSlide < totalSlides) {
+      currentSlide++;
+      updateSlide();
+    }
+  }
+
+  function prevSlide() {
+    if (currentSlide > 1) {
+      currentSlide--;
+      updateSlide();
+    }
+  }
+
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowRight' || event.key === 'Space') {
+      nextSlide();
+    } else if (event.key === 'ArrowLeft') {
+      prevSlide();
+    }
+  });
+</script>
+
+</body>
+</html>
