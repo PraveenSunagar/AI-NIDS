@@ -144,4 +144,4 @@ docker-compose up --build
 - **Phase 6**: Syslog / CEF forwarding for Splunk & Elastic SIEM integration
 - **Phase 7**: Automated firewall IP blocking via authorized API hooks
 - **Phase 8**: Continuous model retraining pipeline
-- **Phase 9**: Threat intelligence feed integration (MISP / AlienVault OTX)
+- **Phase 9**: Threat intelligence feed integration (MISP / AlienVault OTX
