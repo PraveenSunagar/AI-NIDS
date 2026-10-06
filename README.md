@@ -22,7 +22,6 @@ graph TD
 ```
 
 ---
-
 ## 2. Key Features
 
 - **NSL-KDD Supervised ML Classification**: Compares **Random Forest** and **Decision Tree** models trained on 20 discriminative traffic features.
