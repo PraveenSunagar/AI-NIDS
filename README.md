@@ -5,7 +5,6 @@ Production-grade, full-stack cybersecurity web platform for real-time Network In
 --
 
 ## 1. System Architecture
-
 ```mermaid
 graph TD
     Client["React + TypeScript + Tailwind CSS Frontend"] <-->|REST API / WebSockets| Server["FastAPI Backend"]
