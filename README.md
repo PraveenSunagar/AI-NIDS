@@ -1,7 +1,6 @@
 # AI-Based Network Intrusion Detection System (AI-NIDS)
 
 Production-grade, full-stack cybersecurity web platform for real-time Network Intrusion Detection using Machine Learning trained on the **NSL-KDD benchmark dataset**.
-
 --
 ## 1. System Architecture
 ```mermaid
