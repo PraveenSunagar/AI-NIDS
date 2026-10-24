@@ -69,7 +69,6 @@ pip install -r requirements.txt
 # Run ML pipeline to download NSL-KDD dataset and train models
 python backend/ml/train.py
 ```
-
 ### 2. Start FastAPI Backend Server
 
 ```bash
