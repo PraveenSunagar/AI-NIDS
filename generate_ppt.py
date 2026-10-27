@@ -8,7 +8,7 @@ from pptx.enum.shapes import MSO_SHAPE
 
 def create_presentation():
     prs = Presentation()
-    # Set slide dimensions to widescreen 16:9
+    dimensions to widescreen 16:9
     prs.slide_width = Inches(13.333)
     prs.slide_height = Inches(7.5)
 
