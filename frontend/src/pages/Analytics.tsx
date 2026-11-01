@@ -11,7 +11,12 @@ export const Analytics: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    dashboardApi.getStats().then(setStats).catch(console.error).finally(() => setLoading(false));
+    const fetchStats = () => {
+      dashboardApi.getStats().then(setStats).catch(console.error).finally(() => setLoading(false));
+    };
+    fetchStats();
+    const interval = setInterval(fetchStats, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   if (loading) {
@@ -21,6 +26,36 @@ export const Analytics: React.FC = () => {
       </div>
     );
   }
+
+  const attackEntries = Object.entries(stats?.attack_distribution || {})
+    .filter(([, count]) => count > 0)
+    .sort((a, b) => b[1] - a[1]);
+  const primaryThreatVector =
+    attackEntries.length > 0 ? `${attackEntries[0][0]} (${attackEntries[0][1]} flows)` : 'None Observed';
+  const primaryThreatSubtext =
+    attackEntries.length > 0
+      ? `Most frequent category in attack_distribution (${stats?.attacks_detected || 0} total flagged flows)`
+      : 'No suspicious attack categories observed in database';
+
+  const protoEntries = Object.entries(stats?.protocol_distribution || {})
+    .filter(([, count]) => count > 0)
+    .sort((a, b) => b[1] - a[1]);
+  const topProtocol =
+    protoEntries.length > 0 ? `${protoEntries[0][0]} (${protoEntries[0][1]} flows)` : 'None Observed';
+  const topProtocolSubtext =
+    protoEntries.length > 0
+      ? `Derived from protocol_distribution across ${stats?.total_traffic || 0} captured flows`
+      : 'No transport protocol flows recorded yet';
+
+  const timeSeries = stats?.time_series || [];
+  const computedMeanConf =
+    typeof stats?.recent_mean_confidence === 'number' && timeSeries.length > 0
+      ? stats.recent_mean_confidence
+      : timeSeries.length > 0
+      ? timeSeries.reduce((acc, item) => acc + item.confidence, 0) / timeSeries.length
+      : null;
+  const meanConfidenceDisplay =
+    computedMeanConf !== null ? `${(computedMeanConf * 100).toFixed(1)}%` : 'None Observed';
 
   return (
     <div className="space-y-6">
@@ -36,20 +71,20 @@ export const Analytics: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="soc-card space-y-2">
           <span className="text-xs text-slate-400 font-medium uppercase">Primary Threat Vector</span>
-          <h3 className="text-xl font-bold text-rose-400 font-mono">DoS (Denial of Service)</h3>
-          <p className="text-xs text-slate-400">High-volume SYN floods (`S0` status flags, elevated connection counts)</p>
+          <h3 className="text-xl font-bold text-rose-400 font-mono">{primaryThreatVector}</h3>
+          <p className="text-xs text-slate-400">{primaryThreatSubtext}</p>
         </div>
 
         <div className="soc-card space-y-2">
           <span className="text-xs text-slate-400 font-medium uppercase">Most Frequent Protocol</span>
-          <h3 className="text-xl font-bold text-sky-400 font-mono">TCP / HTTP</h3>
-          <p className="text-xs text-slate-400">Main transport protocol observed across network flows</p>
+          <h3 className="text-xl font-bold text-sky-400 font-mono">{topProtocol}</h3>
+          <p className="text-xs text-slate-400">{topProtocolSubtext}</p>
         </div>
 
         <div className="soc-card space-y-2">
-          <span className="text-xs text-slate-400 font-medium uppercase">Average Detection Confidence</span>
-          <h3 className="text-xl font-bold text-emerald-400 font-mono">94.8%</h3>
-          <p className="text-xs text-slate-400">High precision classification accuracy</p>
+          <span className="text-xs text-slate-400 font-medium uppercase">Recent-Flow Mean Confidence</span>
+          <h3 className="text-xl font-bold text-emerald-400 font-mono">{meanConfidenceDisplay}</h3>
+          <p className="text-xs text-slate-400">Mean predicted-class confidence on recent flows (not live accuracy)</p>
         </div>
       </div>
 

@@ -47,6 +47,8 @@ frontend/.tmp/
 .DS_Store
 Thumbs.db
 *.log
+.pytest_cache/
+backups/
 
 # Environment variables & secrets
 .env

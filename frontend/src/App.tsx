@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { User, TrafficEvent } from './types';
-import { authApi } from './services/api';
+import { User, TrafficEvent, CaptureStatus } from './types';
+import { authApi, trafficApi } from './services/api';
 import { TrafficWebSocketClient } from './services/websocket';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
@@ -20,6 +20,7 @@ export function App() {
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [latestEvent, setLatestEvent] = useState<TrafficEvent | null>(null);
   const [isWsConnected, setIsWsConnected] = useState(false);
+  const [captureStatus, setCaptureStatus] = useState<CaptureStatus | null>(null);
 
   // Check stored auth token on mount
   useEffect(() => {
@@ -34,6 +35,16 @@ export function App() {
     }
   }, []);
 
+  // Poll capture status periodically for Header & Sidebar indicators
+  useEffect(() => {
+    const fetchStatus = () => {
+      trafficApi.getCaptureStatus().then(setCaptureStatus).catch(() => {});
+    };
+    fetchStatus();
+    const interval = setInterval(fetchStatus, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Connect WebSocket stream
   useEffect(() => {
     const wsClient = new TrafficWebSocketClient();
@@ -44,6 +55,9 @@ export function App() {
 
     const unsubscribeMessage = wsClient.onMessage((data) => {
       setLatestEvent(data);
+      if (data.capture_status) {
+        setCaptureStatus(data.capture_status);
+      }
     });
 
     wsClient.connect();
@@ -55,7 +69,7 @@ export function App() {
     };
   }, []);
 
-  const handleLoginSuccess = (user: User, token: string) => {
+  const handleLoginSuccess = (user: User, _token: string) => {
     setCurrentUser(user);
   };
 
@@ -83,15 +97,27 @@ export function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         isWsConnected={isWsConnected}
+        captureStatus={captureStatus}
       />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        <Header user={currentUser} onLogout={handleLogout} />
+        <Header
+          user={currentUser}
+          onLogout={handleLogout}
+          captureStatus={captureStatus}
+        />
 
         <main className="flex-1 p-6 overflow-y-auto">
           {activeTab === 'dashboard' && <Dashboard latestEvent={latestEvent} />}
-          {activeTab === 'live-traffic' && <LiveTraffic latestEvent={latestEvent} isWsConnected={isWsConnected} />}
+          {activeTab === 'live-traffic' && (
+            <LiveTraffic
+              latestEvent={latestEvent}
+              isWsConnected={isWsConnected}
+              captureStatus={captureStatus}
+              onCaptureStatusChange={setCaptureStatus}
+            />
+          )}
           {activeTab === 'detection' && <Detection />}
           {activeTab === 'alerts' && <Alerts currentUser={currentUser} />}
           {activeTab === 'logs' && <TrafficLogs />}

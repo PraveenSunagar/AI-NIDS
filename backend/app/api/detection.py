@@ -1,10 +1,11 @@
-from datetime import datetime
-from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
 from backend.app.schemas.detection import DetectionRequest, DetectionResponse
 from backend.app.services.traffic_service import TrafficService
+from backend.app.services.alert_service import AlertService
+from backend.app.models.alert import Alert
 from backend.app.utils.logger import log_audit_event
 
 router = APIRouter(prefix="/detection", tags=["Detection"])
@@ -24,18 +25,27 @@ def predict_traffic(request_data: DetectionRequest, request: Request, db: Sessio
         "flow_duration": request_data.duration,
         "packets_per_second": round(request_data.count / (request_data.duration if request_data.duration > 0 else 1.0), 2),
         "bytes_per_second": round((request_data.src_bytes + request_data.dst_bytes) / (request_data.duration if request_data.duration > 0 else 1.0), 2),
+        "packet_count": request_data.count,
+        "capture_mode": "MANUAL_TEST",
+        "interface": "Manual Test Bench",
         "features": feature_dict,
         "model_name": model_choice
     }
 
     record = TrafficService.process_and_record_traffic(db, traffic_payload)
+    feat_meta = record.feature_data if isinstance(record.feature_data, dict) else {}
 
     alert_created = False
     alert_severity = None
     if record.prediction == "ATTACK":
         alert_created = True
-        # Find created alert
-        alert = db.query(TrafficService.AlertService.Alert if hasattr(TrafficService, 'AlertService') else None).filter_by(traffic_record_id=record.id).first() if hasattr(TrafficService, 'AlertService') else None
+        alert = db.query(Alert).filter(Alert.traffic_record_id == record.id).first()
+        if alert:
+            alert_severity = alert.severity.value if hasattr(alert.severity, "value") else str(alert.severity)
+        else:
+            alert_severity = AlertService.calculate_severity(
+                record.confidence, record.attack_type, feat_meta
+            ).value
 
     log_audit_event(
         db=db,
@@ -46,7 +56,8 @@ def predict_traffic(request_data: DetectionRequest, request: Request, db: Sessio
             "prediction": record.prediction,
             "attack_type": record.attack_type,
             "confidence": record.confidence,
-            "model_name": record.model_name
+            "model_name": record.model_name,
+            "validation_status": feat_meta.get("validation_status", "NORMAL"),
         }
     )
 
@@ -58,5 +69,7 @@ def predict_traffic(request_data: DetectionRequest, request: Request, db: Sessio
         model_name=record.model_name,
         timestamp=record.timestamp.isoformat(),
         alert_created=alert_created,
-        alert_severity=alert_severity
+        alert_severity=alert_severity,
+        validation_status=feat_meta.get("validation_status", "NORMAL"),
+        evidence=feat_meta.get("evidence", []),
     )

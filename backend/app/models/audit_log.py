@@ -1,6 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Column, Integer, String, DateTime, JSON
 from backend.app.database import Base
+
+
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
 
 class AuditLog(Base):
     __tablename__ = "audit_logs"
@@ -11,5 +16,5 @@ class AuditLog(Base):
     action = Column(String(100), nullable=False)
     endpoint = Column(String(200), nullable=True)
     ip_address = Column(String(50), nullable=True)
-    timestamp = Column(DateTime, default=datetime.utcnow, index=True)
+    timestamp = Column(DateTime, default=utc_now, index=True)
     metadata_info = Column(JSON, nullable=True)

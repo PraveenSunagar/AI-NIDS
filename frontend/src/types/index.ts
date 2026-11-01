@@ -15,6 +15,55 @@ export interface AuthResponse {
   user: User;
 }
 
+export interface NetworkInterfaceInfo {
+  name: string;
+  description: string;
+  ip: string;
+  mac: string;
+  network_name: string;
+  type: string;
+  is_active_lan: boolean;
+  priority: number;
+}
+
+export interface CaptureStatus {
+  mode: 'REAL' | 'DEMO';
+  is_running: boolean;
+  active_interface: string;
+  interface_description: string;
+  interface_ip: string;
+  packets_captured: number;
+  active_flows: number;
+  flows_processed: number;
+  queue_capacity?: number;
+  queued_flows?: number;
+  max_queue_depth?: number;
+  dropped_flows?: number;
+  queue_overflow_events?: number;
+  total_flows_enqueued?: number;
+  total_flows_persisted?: number;
+  in_flight_flows?: number;
+  avg_queue_latency_ms?: number;
+  max_queue_latency_ms?: number;
+  scapy_available: boolean;
+  npcap_available: boolean;
+  is_admin: boolean;
+  permission_status: string;
+  last_error: string | null;
+  started_at: string | null;
+  last_packet_at: string | null;
+  visibility_notice: string;
+}
+
+export interface InterfacesResponse {
+  interfaces: NetworkInterfaceInfo[];
+  active_interface: string;
+  scapy_available: boolean;
+  npcap_available: boolean;
+  is_admin: boolean;
+  visibility_notice: string;
+}
+
 export interface TrafficEvent {
   id: number;
   timestamp: string;
@@ -24,12 +73,21 @@ export interface TrafficEvent {
   destination_port: number;
   protocol: string;
   packet_size: number;
+  packet_count?: number;
+  flow_duration?: number;
+  packets_per_second?: number;
+  bytes_per_second?: number;
+  interface?: string;
+  capture_mode?: 'REAL' | 'DEMO' | 'MANUAL_TEST';
   prediction: 'NORMAL' | 'ATTACK';
   attack_type: string;
   confidence: number;
   model_name: string;
   severity?: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' | 'NORMAL';
+  validation_status?: 'NORMAL' | 'VERIFIED_BENIGN_BROADCAST' | 'UNVERIFIED' | 'VERIFIED_SUSPICIOUS' | string;
+  evidence?: string[];
   feature_data?: Record<string, any>;
+  capture_status?: CaptureStatus;
 }
 
 export interface Alert {
@@ -41,10 +99,13 @@ export interface Alert {
   destination_ip: string;
   message: string;
   confidence: number;
-  status: 'OPEN' | 'ACKNOWLEDGED' | 'RESOLVED';
+  status: 'UNVERIFIED' | 'OPEN' | 'ACKNOWLEDGED' | 'RESOLVED';
   created_at: string;
   acknowledged_at?: string;
   acknowledged_by?: string;
+  validation_status?: string;
+  evidence?: string[];
+  occurrence_count?: number;
 }
 
 export interface DashboardStats {
@@ -53,6 +114,7 @@ export interface DashboardStats {
   attacks_detected: number;
   open_alerts: number;
   detection_rate: number;
+  recent_mean_confidence?: number;
   protocol_distribution: Record<string, number>;
   attack_distribution: Record<string, number>;
   severity_distribution: Record<string, number>;
@@ -63,6 +125,7 @@ export interface DashboardStats {
     attack_type: string;
     protocol: string;
   }>;
+  capture_status?: CaptureStatus;
 }
 
 export interface MLModelMetrics {
@@ -122,6 +185,7 @@ export interface DetectionRequestPayload {
   count: number;
   srv_count: number;
   serror_rate: number;
+  srv_serror_rate: number;
   same_srv_rate: number;
   diff_srv_rate: number;
   dst_host_count: number;
@@ -132,6 +196,7 @@ export interface DetectionRequestPayload {
   dst_host_srv_diff_host_rate: number;
   dst_host_serror_rate: number;
   dst_host_srv_serror_rate: number;
+  dst_host_rerror_rate: number;
   model_name?: string;
 }
 

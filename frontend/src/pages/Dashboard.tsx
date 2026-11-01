@@ -148,9 +148,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ latestEvent }) => {
           color="purple"
         />
         <StatCard
-          title="Model Accuracy"
+          title="Offline Test Accuracy"
           value={modelAccuracy}
-          subtext="NSL-KDD test set"
+          subtext="NSL-KDD benchmark only — not live accuracy"
           icon={Target}
           color="emerald"
         />
@@ -250,7 +250,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ latestEvent }) => {
                 <XAxis dataKey="protocol" stroke="#475569" fontSize={11} />
                 <YAxis stroke="#475569" fontSize={11} />
                 <Tooltip contentStyle={{ backgroundColor: '#0b0f19', borderColor: '#1e293b', borderRadius: '8px', fontSize: '12px' }} />
-                <Bar dataKey="count" name="Packets" fill="#38bdf8" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="count" name="Flows" fill="#38bdf8" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

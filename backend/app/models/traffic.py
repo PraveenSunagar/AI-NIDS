@@ -1,12 +1,17 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Column, Integer, String, Float, DateTime, JSON
 from backend.app.database import Base
+
+
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
 
 class TrafficRecord(Base):
     __tablename__ = "traffic_records"
 
     id = Column(Integer, primary_key=True, index=True)
-    timestamp = Column(DateTime, default=datetime.utcnow, index=True)
+    timestamp = Column(DateTime, default=utc_now, index=True)
     source_ip = Column(String(50), nullable=False)
     destination_ip = Column(String(50), nullable=False)
     source_port = Column(Integer, nullable=False)
@@ -21,4 +26,4 @@ class TrafficRecord(Base):
     attack_type = Column(String(50), default="Normal")
     confidence = Column(Float, nullable=False)
     model_name = Column(String(50), nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)

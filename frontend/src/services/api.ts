@@ -1,14 +1,16 @@
 import axios from 'axios';
-import { 
-  AuthResponse, 
-  User, 
-  DashboardStats, 
-  TrafficEvent, 
-  Alert, 
-  MLModelMetrics, 
-  AuditLog, 
-  DetectionRequestPayload, 
-  DetectionResult 
+import {
+  AuthResponse,
+  User,
+  DashboardStats,
+  TrafficEvent,
+  Alert,
+  MLModelMetrics,
+  AuditLog,
+  DetectionRequestPayload,
+  DetectionResult,
+  CaptureStatus,
+  InterfacesResponse
 } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
@@ -66,8 +68,16 @@ export const alertsApi = {
     const res = await api.get(`/alerts?${params.toString()}`);
     return res.data;
   },
-  updateStatus: async (alertId: number, status: 'ACKNOWLEDGED' | 'RESOLVED'): Promise<Alert> => {
+  updateStatus: async (alertId: number, status: 'UNVERIFIED' | 'OPEN' | 'ACKNOWLEDGED' | 'RESOLVED'): Promise<Alert> => {
     const res = await api.put(`/alerts/${alertId}/status`, { status });
+    return res.data;
+  },
+  getConfig: async (): Promise<{ dedup_window_seconds: number; unverified_confidence_threshold: number }> => {
+    const res = await api.get('/alerts/config');
+    return res.data;
+  },
+  updateConfig: async (dedup_window_seconds: number): Promise<{ dedup_window_seconds: number; unverified_confidence_threshold: number }> => {
+    const res = await api.put('/alerts/config', { dedup_window_seconds });
     return res.data;
   },
 };
@@ -80,6 +90,18 @@ export const trafficApi = {
     if (protocol) params.append('protocol', protocol);
     if (search) params.append('search', search);
     const res = await api.get(`/traffic/history?${params.toString()}`);
+    return res.data;
+  },
+  getInterfaces: async (): Promise<InterfacesResponse> => {
+    const res = await api.get('/traffic/interfaces');
+    return res.data;
+  },
+  getCaptureStatus: async (): Promise<CaptureStatus> => {
+    const res = await api.get('/traffic/capture/status');
+    return res.data;
+  },
+  configureCapture: async (iface?: string, action: 'start' | 'stop' | 'restart' = 'start'): Promise<CaptureStatus> => {
+    const res = await api.post('/traffic/capture/config', { interface: iface, action });
     return res.data;
   },
 };

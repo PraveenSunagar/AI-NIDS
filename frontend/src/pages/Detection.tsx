@@ -16,6 +16,7 @@ export const Detection: React.FC = () => {
     count: 5,
     srv_count: 5,
     serror_rate: 0.0,
+    srv_serror_rate: 0.0,
     same_srv_rate: 1.0,
     diff_srv_rate: 0.0,
     dst_host_count: 100,
@@ -26,6 +27,7 @@ export const Detection: React.FC = () => {
     dst_host_srv_diff_host_rate: 0.0,
     dst_host_serror_rate: 0.0,
     dst_host_srv_serror_rate: 0.0,
+    dst_host_rerror_rate: 0.0,
     model_name: 'best'
   });
 
@@ -38,10 +40,11 @@ export const Detection: React.FC = () => {
       data: {
         duration: 0.5, protocol_type: 'tcp', service: 'http', flag: 'SF',
         src_bytes: 320, dst_bytes: 2400, logged_in: 1, count: 4, srv_count: 4,
-        serror_rate: 0.0, same_srv_rate: 1.0, diff_srv_rate: 0.0,
+        serror_rate: 0.0, srv_serror_rate: 0.0, same_srv_rate: 1.0, diff_srv_rate: 0.0,
         dst_host_count: 150, dst_host_srv_count: 250, dst_host_same_srv_rate: 1.0,
         dst_host_diff_srv_rate: 0.0, dst_host_same_src_port_rate: 0.1,
-        dst_host_srv_diff_host_rate: 0.0, dst_host_serror_rate: 0.0, dst_host_srv_serror_rate: 0.0
+        dst_host_srv_diff_host_rate: 0.0, dst_host_serror_rate: 0.0, dst_host_srv_serror_rate: 0.0,
+        dst_host_rerror_rate: 0.0
       }
     },
     dos: {
@@ -49,10 +52,11 @@ export const Detection: React.FC = () => {
       data: {
         duration: 0.0, protocol_type: 'tcp', service: 'private', flag: 'S0',
         src_bytes: 0, dst_bytes: 0, logged_in: 0, count: 350, srv_count: 250,
-        serror_rate: 1.0, same_srv_rate: 0.05, diff_srv_rate: 0.95,
+        serror_rate: 1.0, srv_serror_rate: 1.0, same_srv_rate: 0.05, diff_srv_rate: 0.95,
         dst_host_count: 255, dst_host_srv_count: 5, dst_host_same_srv_rate: 0.02,
         dst_host_diff_srv_rate: 0.98, dst_host_same_src_port_rate: 0.0,
-        dst_host_srv_diff_host_rate: 0.0, dst_host_serror_rate: 1.0, dst_host_srv_serror_rate: 1.0
+        dst_host_srv_diff_host_rate: 0.0, dst_host_serror_rate: 1.0, dst_host_srv_serror_rate: 1.0,
+        dst_host_rerror_rate: 0.0
       }
     },
     probe: {
@@ -60,10 +64,11 @@ export const Detection: React.FC = () => {
       data: {
         duration: 0.1, protocol_type: 'tcp', service: 'other', flag: 'REJ',
         src_bytes: 0, dst_bytes: 0, logged_in: 0, count: 120, srv_count: 2,
-        serror_rate: 0.0, same_srv_rate: 0.02, diff_srv_rate: 0.98,
+        serror_rate: 0.0, srv_serror_rate: 0.0, same_srv_rate: 0.02, diff_srv_rate: 0.98,
         dst_host_count: 255, dst_host_srv_count: 2, dst_host_same_srv_rate: 0.01,
         dst_host_diff_srv_rate: 0.99, dst_host_same_src_port_rate: 0.8,
-        dst_host_srv_diff_host_rate: 0.5, dst_host_serror_rate: 0.0, dst_host_srv_serror_rate: 0.0
+        dst_host_srv_diff_host_rate: 0.5, dst_host_serror_rate: 0.0, dst_host_srv_serror_rate: 0.0,
+        dst_host_rerror_rate: 0.95
       }
     }
   };
@@ -223,6 +228,16 @@ export const Detection: React.FC = () => {
               <div>
                 <label className="block text-slate-400 mb-1">Dst Host Same Srv Rate</label>
                 <input type="number" step="0.01" name="dst_host_same_srv_rate" value={formData.dst_host_same_srv_rate} onChange={handleInputChange} className="w-full bg-slate-900 border border-soc-border rounded px-2.5 py-1.5 text-white" />
+              </div>
+
+              <div>
+                <label className="block text-slate-400 mb-1">Service SYN Error Rate (0.0 - 1.0)</label>
+                <input type="number" step="0.01" name="srv_serror_rate" value={formData.srv_serror_rate} onChange={handleInputChange} className="w-full bg-slate-900 border border-soc-border rounded px-2.5 py-1.5 text-white" />
+              </div>
+
+              <div>
+                <label className="block text-slate-400 mb-1">Dst Host REJ Error Rate (0.0 - 1.0)</label>
+                <input type="number" step="0.01" name="dst_host_rerror_rate" value={formData.dst_host_rerror_rate} onChange={handleInputChange} className="w-full bg-slate-900 border border-soc-border rounded px-2.5 py-1.5 text-white" />
               </div>
             </div>
 

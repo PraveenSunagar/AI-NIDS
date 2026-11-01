@@ -11,17 +11,22 @@ import {
   ShieldCheck,
   Radio
 } from 'lucide-react';
+import { CaptureStatus } from '../types';
 
 interface SidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   isWsConnected: boolean;
+  captureStatus?: CaptureStatus | null;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isWsConnected }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isWsConnected, captureStatus }) => {
+  const isCapturing = captureStatus?.is_running ?? isWsConnected;
+  const modeLabel = (captureStatus?.mode || 'REAL') === 'REAL' ? 'REAL' : 'DEMO';
+
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'live-traffic', label: 'Live Traffic', icon: Activity, badge: isWsConnected ? 'LIVE' : undefined },
+    { id: 'live-traffic', label: 'Live Traffic', icon: Activity, badge: isCapturing ? modeLabel : undefined },
     { id: 'detection', label: 'Detection Test', icon: Search },
     { id: 'alerts', label: 'Alerts', icon: ShieldAlert },
     { id: 'logs', label: 'Traffic Logs', icon: FileText },
@@ -44,18 +49,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isWsC
           </div>
         </div>
 
-        {/* Live Stream Status Indicator */}
-        <div className="mx-4 my-4 p-3 rounded-lg bg-slate-900/60 border border-soc-border flex items-center justify-between text-xs">
-          <span className="text-slate-400 flex items-center gap-1.5">
-            <Radio className="w-3.5 h-3.5 text-sky-400" /> Sensor Stream
-          </span>
-          <span className={`px-2 py-0.5 rounded-full font-mono font-semibold text-[10px] ${
-            isWsConnected 
-              ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse' 
-              : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-          }`}>
-            {isWsConnected ? 'ACTIVE' : 'OFFLINE'}
-          </span>
+        {/* Live Stream & Mode Status Indicator */}
+        <div className="mx-4 my-4 p-3 rounded-lg bg-slate-900/60 border border-soc-border space-y-2 text-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-slate-400 flex items-center gap-1.5">
+              <Radio className="w-3.5 h-3.5 text-sky-400" /> Capture Mode
+            </span>
+            <span className={`px-2 py-0.5 rounded-full font-mono font-bold text-[10px] ${
+              isCapturing
+                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse'
+                : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+            }`}>
+              {isCapturing ? `${modeLabel} ACTIVE` : 'PAUSED'}
+            </span>
+          </div>
+          {captureStatus?.active_interface && (
+            <div className="text-[11px] font-mono text-slate-400 truncate border-t border-soc-border/60 pt-1.5">
+              NIC: <span className="text-sky-400">{captureStatus.active_interface}</span> ({captureStatus.packets_captured} pkts)
+            </div>
+          )}
         </div>
 
         {/* Navigation Items */}
@@ -78,7 +90,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isWsC
                   <span>{item.label}</span>
                 </div>
                 {item.badge && (
-                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-500 text-white animate-pulse">
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500 text-slate-950 animate-pulse">
                     {item.badge}
                   </span>
                 )}

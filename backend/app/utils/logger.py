@@ -1,6 +1,6 @@
 import logging
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 from backend.app.models.audit_log import AuditLog
 
@@ -37,7 +37,7 @@ def log_audit_event(
             action=action,
             endpoint=endpoint,
             ip_address=ip_address,
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc).replace(tzinfo=None),
             metadata_info=metadata_info
         )
         db.add(audit_entry)

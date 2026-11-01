@@ -22,3 +22,8 @@ class TrafficRecordResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class CaptureConfigRequest(BaseModel):
+    interface: Optional[str] = None
+    action: Optional[str] = "start"  # "start", "stop", "restart"

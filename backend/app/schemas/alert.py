@@ -1,11 +1,14 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel
 from backend.app.models.alert import AlertSeverity, AlertStatus
 
 class AlertUpdate(BaseModel):
     status: AlertStatus
     acknowledged_by: Optional[str] = None
+
+class AlertDedupConfig(BaseModel):
+    dedup_window_seconds: int
 
 class AlertResponse(BaseModel):
     id: int
@@ -20,6 +23,9 @@ class AlertResponse(BaseModel):
     created_at: datetime
     acknowledged_at: Optional[datetime] = None
     acknowledged_by: Optional[str] = None
+    validation_status: Optional[str] = None
+    evidence: Optional[List[str]] = None
+    occurrence_count: Optional[int] = 1
 
     class Config:
         from_attributes = True

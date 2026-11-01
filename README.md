@@ -129,7 +129,7 @@ docker-compose up --build
 ## 9. Important Technical Limitations
 
 1. **NSL-KDD Dataset Scope**: NSL-KDD is a research benchmark dataset. While effective for learning baseline features, modern production networks require continuous model retraining on contemporary traffic captures.
-2. **Packet Capture Privileges**: Real-time packet sniffer mode (`PacketCaptureAdapter`) requires administrative/root privileges and network interface configuration. Demo mode (`DemoTrafficAdapter`) streams simulated traffic without special permissions.
+2. **Real-Time Passive Packet Capture & Interface Visibility**: `PacketCaptureAdapter` uses Python **Scapy** and **Npcap** on Windows to passively sniff live IPv4/IPv6 packets on Wi-Fi and Ethernet interfaces, aggregate bidirectional 5-tuple flows, and extract the 20 NSL-KDD features. Note that passive capture on a local Wi-Fi/Ethernet NIC observes traffic sent to/from the host and broadcast/multicast frames; unicast traffic between other separate devices on a switched network requires switch port mirroring (SPAN) or an inline tap.
 3. **Supervised vs Zero-Day Detection**: Supervised classifiers detect known attack signatures present in the dataset. Detection of novel zero-day exploits requires future unsupervised anomaly detection integration.
 
 ---
@@ -137,7 +137,7 @@ docker-compose up --build
 ## 10. Future Roadmap
 
 - **Phase 1**: NSL-KDD + Decision Tree / Random Forest (Completed)
-- **Phase 2**: Real-time packet capture adapter integration via Scapy
+- **Phase 2**: Real-time packet capture adapter integration via Scapy & Npcap (Completed)
 - **Phase 3**: WebSocket live SOC event monitoring (Completed)
 - **Phase 4**: Unsupervised Autoencoder anomaly detection for zero-day threat isolation
 - **Phase 5**: Deep Learning LSTM sequence models for temporal flow analysis

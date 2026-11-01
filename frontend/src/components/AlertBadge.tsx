@@ -2,7 +2,7 @@ import React from 'react';
 
 interface AlertBadgeProps {
   severity?: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' | 'NORMAL' | string;
-  status?: 'OPEN' | 'ACKNOWLEDGED' | 'RESOLVED' | string;
+  status?: 'UNVERIFIED' | 'OPEN' | 'ACKNOWLEDGED' | 'RESOLVED' | string;
 }
 
 export const SeverityBadge: React.FC<{ severity: string }> = ({ severity }) => {
@@ -27,14 +27,17 @@ export const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
   const statUpper = status?.toUpperCase();
 
   const styles = {
+    UNVERIFIED: 'bg-purple-500/15 text-purple-300 border-purple-500/40',
     OPEN: 'bg-rose-500/10 text-rose-400 border-rose-500/30',
     ACKNOWLEDGED: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
     RESOLVED: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
   }[statUpper] || 'bg-slate-800 text-slate-300 border-slate-700';
 
+  const label = statUpper === 'UNVERIFIED' ? 'UNVERIFIED / INVESTIGATE' : statUpper;
+
   return (
     <span className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-medium border ${styles}`}>
-      {statUpper}
+      {label}
     </span>
   );
 };

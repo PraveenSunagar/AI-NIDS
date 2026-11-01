@@ -1,7 +1,12 @@
 import enum
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Column, Integer, String, Float, DateTime, Enum, ForeignKey
 from backend.app.database import Base
+
+
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
 
 class AlertSeverity(str, enum.Enum):
     LOW = "LOW"
@@ -10,6 +15,7 @@ class AlertSeverity(str, enum.Enum):
     CRITICAL = "CRITICAL"
 
 class AlertStatus(str, enum.Enum):
+    UNVERIFIED = "UNVERIFIED"
     OPEN = "OPEN"
     ACKNOWLEDGED = "ACKNOWLEDGED"
     RESOLVED = "RESOLVED"
@@ -26,6 +32,6 @@ class Alert(Base):
     message = Column(String(255), nullable=False)
     confidence = Column(Float, nullable=False)
     status = Column(Enum(AlertStatus), default=AlertStatus.OPEN, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    created_at = Column(DateTime, default=utc_now, index=True)
     acknowledged_at = Column(DateTime, nullable=True)
     acknowledged_by = Column(String(100), nullable=True)

@@ -127,7 +127,7 @@ export const TrafficLogs: React.FC = () => {
                   <th className="py-3.5 px-4">Protocol</th>
                   <th className="py-3.5 px-4">Prediction</th>
                   <th className="py-3.5 px-4">Attack Type</th>
-                  <th className="py-3.5 px-4">Confidence</th>
+                  <th className="py-3.5 px-4">Pred. Confidence</th>
                   <th className="py-3.5 px-4">Classifier</th>
                 </tr>
               </thead>
@@ -137,12 +137,25 @@ export const TrafficLogs: React.FC = () => {
                     <td colSpan={8} className="py-8 text-center text-slate-500">No traffic logs found.</td>
                   </tr>
                 ) : (
-                  trafficLogs.map((t) => (
+                  trafficLogs.map((t) => {
+                    const fmtIp = (ip: string, port?: number) => {
+                      const hasPort = typeof port === 'number' && port > 0;
+                      return ip.includes(':')
+                        ? hasPort ? `[${ip}]:${port}` : `[${ip}]`
+                        : hasPort ? `${ip}:${port}` : ip;
+                    };
+                    const protoLabel =
+                      t.protocol === 'UDP' && (t.source_port === 443 || t.destination_port === 443)
+                        ? 'UDP/443 (QUIC)'
+                        : t.protocol;
+                    return (
                     <tr key={t.id} className="hover:bg-slate-800/40 transition-colors">
                       <td className="py-3 px-4 text-slate-400">#{t.id}</td>
                       <td className="py-3 px-4 text-slate-400">{t.timestamp}</td>
-                      <td className="py-3 px-4 text-slate-200">{t.source_ip} → {t.destination_ip}</td>
-                      <td className="py-3 px-4 text-sky-400 font-bold">{t.protocol}</td>
+                      <td className="py-3 px-4 text-slate-200">
+                        {fmtIp(t.source_ip, t.source_port)} → {fmtIp(t.destination_ip, t.destination_port)}
+                      </td>
+                      <td className="py-3 px-4 text-sky-400 font-bold">{protoLabel}</td>
                       <td className="py-3 px-4">
                         <span className={`px-2 py-0.5 rounded font-bold ${
                           t.prediction === 'ATTACK' ? 'bg-rose-500/20 text-rose-400' : 'bg-emerald-500/20 text-emerald-400'
@@ -151,10 +164,13 @@ export const TrafficLogs: React.FC = () => {
                         </span>
                       </td>
                       <td className="py-3 px-4 text-slate-200">{t.attack_type}</td>
-                      <td className="py-3 px-4 text-slate-300">{(t.confidence * 100).toFixed(1)}%</td>
+                      <td className="py-3 px-4 text-slate-300">
+                        {(t.confidence * 100).toFixed(1)}% <span className="text-[10px] text-slate-500">({t.prediction})</span>
+                      </td>
                       <td className="py-3 px-4 text-slate-400">{t.model_name}</td>
                     </tr>
-                  ))
+                  );
+                  })
                 )}
               </tbody>
             </table>

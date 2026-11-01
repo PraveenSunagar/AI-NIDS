@@ -1,12 +1,11 @@
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
-from backend.app.schemas.alert import AlertResponse, AlertUpdate
+from backend.app.schemas.alert import AlertResponse, AlertUpdate, AlertDedupConfig
 from backend.app.services.alert_service import AlertService
 from backend.app.models.user import User
-from backend.app.security.authentication import get_current_active_user
 from backend.app.security.authorization import allow_analyst_or_admin
 from backend.app.utils.logger import log_audit_event
 
@@ -14,12 +13,27 @@ router = APIRouter(prefix="/alerts", tags=["Alerts"])
 
 @router.get("", response_model=List[AlertResponse])
 def get_alerts(
-    status: Optional[str] = Query(None, description="Filter by status: OPEN, ACKNOWLEDGED, RESOLVED"),
+    status: Optional[str] = Query(None, description="Filter by status: UNVERIFIED, OPEN, ACKNOWLEDGED, RESOLVED"),
     severity: Optional[str] = Query(None, description="Filter by severity: LOW, MEDIUM, HIGH, CRITICAL"),
     limit: int = Query(100, ge=1, le=500),
     db: Session = Depends(get_db)
 ):
     return AlertService.get_alerts(db, status=status, severity=severity, limit=limit)
+
+@router.get("/config")
+def get_alert_config() -> Dict[str, Any]:
+    return {
+        "dedup_window_seconds": AlertService.dedup_window_seconds,
+        "unverified_confidence_threshold": 0.72,
+    }
+
+@router.put("/config")
+def update_alert_config(config: AlertDedupConfig) -> Dict[str, Any]:
+    updated = AlertService.set_dedup_window(config.dedup_window_seconds)
+    return {
+        "dedup_window_seconds": updated,
+        "unverified_confidence_threshold": 0.72,
+    }
 
 @router.put("/{alert_id}/status", response_model=AlertResponse)
 def update_alert_status(
