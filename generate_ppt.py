@@ -8,11 +8,9 @@ from pptx.enum.shapes import MSO_SHAPE
 
 def create_presentation():
     prs = Presentation()
-    # Set slide dimensions to widescreen 16:9
     prs.slide_width = Inches(13.333)
     prs.slide_height = Inches(7.5)
 
-    # Color Palette Constants
     BG_DARK = RGBColor(15, 23, 42)        # Slate 900 (#0F172A)
     CARD_BG = RGBColor(30, 41, 59)        # Slate 800 (#1E293B)
     CARD_BORDER = RGBColor(51, 65, 85)    # Slate 700 (#334155)

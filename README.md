@@ -1,11 +1,8 @@
 # AI-Based Network Intrusion Detection System (AI-NIDS)
 
 Production-grade, full-stack cybersecurity web platform for real-time Network Intrusion Detection using Machine Learning trained on the **NSL-KDD benchmark dataset**.
-
----
-
+--
 ## 1. System Architecture
-
 ```mermaid
 graph TD
     Client["React + TypeScript + Tailwind CSS Frontend"] <-->|REST API / WebSockets| Server["FastAPI Backend"]
@@ -20,9 +17,7 @@ graph TD
         Train --> Export["Joblib Artifacts .pkl"]
     end
 ```
-
 ---
-
 ## 2. Key Features
 
 - **NSL-KDD Supervised ML Classification**: Compares **Random Forest** and **Decision Tree** models trained on 20 discriminative traffic features.
@@ -74,7 +69,6 @@ pip install -r requirements.txt
 # Run ML pipeline to download NSL-KDD dataset and train models
 python backend/ml/train.py
 ```
-
 ### 2. Start FastAPI Backend Server
 
 ```bash
@@ -96,7 +90,6 @@ npm install
 npm run dev
 ```
 Open `http://localhost:5173` in your browser.
-
 ---
 
 ## 6. Default Demo Credentials
@@ -144,4 +137,4 @@ docker-compose up --build
 - **Phase 6**: Syslog / CEF forwarding for Splunk & Elastic SIEM integration
 - **Phase 7**: Automated firewall IP blocking via authorized API hooks
 - **Phase 8**: Continuous model retraining pipeline
-- **Phase 9**: Threat intelligence feed integration (MISP / AlienVault OTX)
+- **Phase 9**: Threat intelligence feed integration (MISP / AlienVault OTX
