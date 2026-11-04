@@ -115,7 +115,6 @@ def create_presentation():
     p3.font.name = "Calibri"
     p3.space_before = Pt(25)
 
-    # Metadata Footer Card
     add_card(slide1, Inches(1.2), Inches(5.3), Inches(10.8), Inches(1.4), border_color=CYAN_ACCENT)
     tb_meta = slide1.shapes.add_textbox(Inches(1.4), Inches(5.45), Inches(10.4), Inches(1.1))
     tf_meta = tb_meta.text_frame
