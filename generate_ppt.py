@@ -11,7 +11,7 @@ def create_presentation():
     prs.slide_width = Inches(13.333)
     prs.slide_height = Inches(7.5)
 
-    BG_DARK = RGBColor(15, 23, 42)        # Slate 900 (#0F172A)
+    BG_DARK = RGBColor(15, 23, 42) 
     CARD_BG = RGBColor(30, 41, 59)        # Slate 800 (#1E293B)
     CARD_BORDER = RGBColor(51, 65, 85)    # Slate 700 (#334155)
     TEXT_MAIN = RGBColor(248, 250, 252)   # Slate 50 (#F8FAFC)
