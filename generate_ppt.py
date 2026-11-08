@@ -13,7 +13,7 @@ def create_presentation():
 
     BG_DARK = RGBColor(15, 23, 42) 
     CARD_BG = RGBColor(30, 41, 59)      
-    CARD_BORDER = RGBColor(51, 65, 85)    # Slate 700 (#334155)
+    CARD_BORDER = RGBColor(51, 65, 85)  
     TEXT_MAIN = RGBColor(248, 250, 252)   # Slate 50 (#F8FAFC)
     TEXT_MUTED = RGBColor(148, 163, 184) # Slate 400 (#94A3B8)
     CYAN_ACCENT = RGBColor(56, 189, 248)  # Cyan 400 (#38BDF8)
